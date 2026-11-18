@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AIPAC · AI 内容自动化工作台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="bg"></div>
+
+  <header class="top">
+    <div class="brand">
+      <span class="mark">AIPAC</span>
+      <span class="sub">热点资讯 → AI 加工 → 排版发布</span>
+    </div>
+    <div class="actions">
+      <span id="auto-pill" class="pill off">自动运行 · 关</span>
+      <button id="btn-settings" class="ghost">设置</button>
+      <button id="btn-pipeline" class="primary">立即跑一轮</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="ready-banner" class="ready-banner" hidden></section>
+
+    <section class="pipeline-bar">
+      <div class="pipe-step" data-step="collect"><b>1</b><span>采集原文</span><em id="s-raw">0</em></div>
+      <div class="pipe-line"></div>
+      <div class="pipe-step" data-step="process"><b>2</b><span>AI 加工</span><em id="s-ready">0</em></div>
+      <div class="pipe-line"></div>
+      <div class="pipe-step" data-step="publish"><b>3</b><span>排版导出</span><em id="s-published">0</em></div>
+    </section>
+    <p id="job-status" class="job-status"></p>
+
+    <section class="workspace">
+      <aside class="list-pane">
+        <div class="pane-h">
+          <h2>稿件</h2>
+          <div class="tabs" id="status-tabs"></div>
+        </div>
+        <div id="items" class="item-list"></div>
+      </aside>
+
+      <section class="preview-pane">
+        <div class="pane-h">
+          <h2 id="preview-title">选择左侧稿件查看</h2>
+          <div class="btn-row" id="preview-actions" hidden>
+            <button id="btn-reprocess" class="primary sm">AI 加工本篇</button>
+            <button id="btn-publish-one" class="ghost sm">发布本篇</button>
+            <a id="btn-origin" class="ghost sm" target="_blank" rel="noopener">打开原文链接</a>
+          </div>
+        </div>
+        <div class="view-tabs" id="view-tabs">
+          <button data-view="origin" class="active">原文</button>
+          <button data-view="ai">AI 成稿</button>
+          <button data-view="wechat">公众号预览</button>
+          <button data-view="xhs">小红书预览</button>
+          <select id="wechat-style" class="style-select" hidden title="公众号排版主题">
+            <option value="wechat_classic">经典</option>
+            <option value="wechat_tech">科技</option>
+            <option value="wechat_latepost">晚点</option>
+          </select>
+        </div>
+        <div id="preview-empty" class="preview-empty">点左侧稿件后，这里显示原文 / AI 成稿 / 发布渲染效果</div>
+        <div id="preview-origin" class="preview-body" hidden></div>
+        <div id="preview-ai" class="preview-body" hidden></div>
+        <iframe id="preview-frame" class="preview-frame" hidden title="发布预览"></iframe>
+        <div class="preview-footer" id="preview-footer" hidden>
+          <button id="btn-copy-html" class="primary sm">复制当前预览 HTML</button>
+          <button id="btn-copy-md" class="ghost sm">复制 Markdown</button>
+        </div>
+      </section>
+
+      <aside class="side-pane">
+        <div class="card">
+          <div class="pane-h">
+            <h2>资讯源</h2>
+            <button id="btn-reset-sources" class="ghost sm">恢复预置</button>
+          </div>
+          <div id="sources" class="mini-list"></div>
+        </div>
+        <div class="card">
+          <div class="pane-h"><h2>发布渠道</h2></div>
+          <div id="targets" class="mini-list"></div>
+          <p class="hint">启用后，加工完成的稿件会自动排版导出</p>
+        </div>
+        <div class="card grow">
+          <div class="pane-h">
+            <h2>过程日志</h2>
+            <button id="btn-clear-logs" class="ghost sm">清空</button>
+          </div>
+          <div id="logs" class="log-list"></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <dialog id="settings-dlg">
+    <form id="settings-form" class="settings-form">
+      <header>
+        <h3>系统设置</h3>
+        <button type="button" id="settings-close" class="ghost sm">关闭</button>
+      </header>
+      <div class="settings-body">
+        <fieldset>
+          <legend>AI（必填，兼容 OpenAI 接口）</legend>
+          <label>服务商快捷填入
+            <select id="ai-provider">
+              <option value="">手动填写</option>
+            </select>
+          </label>
+          <label>Base URL <input name="AI_BASE_URL" placeholder="https://api.deepseek.com" /></label>
+          <label>API Key <input name="AI_API_KEY" type="password" placeholder="留空表示不修改已有密钥" autocomplete="off" /></label>
+          <label>模型 <input name="AI_MODEL" placeholder="deepseek-chat" /></label>
+        </fieldset>
+        <fieldset>
+          <legend>自动运行</legend>
+          <label class="check"><input name="AUTO_RUN" type="checkbox" /> 开启定时：采集 → AI 加工 → 排版导出</label>
+          <label>采集频率 <select name="CRON_COLLECT"></select></label>
+          <label>加工频率 <select name="CRON_PROCESS"></select></label>
+          <label>导出频率 <select name="CRON_PUBLISH"></select></label>
+        </fieldset>
+        <fieldset>
+          <legend>WordPress（可选）</legend>
+          <label>站点 URL <input name="WP_URL" placeholder="https://blog.example.com" /></label>
+          <label>用户名 <input name="WP_USER" /></label>
+          <label>应用密码 <input name="WP_APP_PASSWORD" type="password" placeholder="留空不修改" autocomplete="off" /></label>
+        </fieldset>
+        <p class="hint">公众号 / 小红书：系统导出排版 HTML/Markdown，复制到后台即可。密钥保存在本机 SQLite，不上传第三方。</p>
+      </div>
+      <footer>
+        <button type="submit" class="primary">保存并生效</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <script src="/app.js"></script>
+</body>
+</html>

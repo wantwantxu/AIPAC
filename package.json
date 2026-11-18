@@ -1,0 +1,29 @@
+{
+  "name": "aipac",
+  "version": "1.0.0",
+  "description": "AIPAC：多源采集 → AI 加工 → 多平台发布",
+  "type": "module",
+  "scripts": {
+    "dev": "node --experimental-sqlite --import tsx src/index.ts",
+    "build": "tsc && node -e \"require('fs').cpSync('src/web','dist/web',{recursive:true})\"",
+    "start": "node --experimental-sqlite dist/index.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "fastify": "^5.2.1",
+    "@fastify/static": "^8.1.0",
+    "@fastify/cors": "^10.0.2",
+    "node-cron": "^3.0.3",
+    "rss-parser": "^3.13.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/node-cron": "^3.0.11",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

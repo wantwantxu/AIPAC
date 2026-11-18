@@ -1,0 +1,13 @@
+services:
+  aipac:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    # 2G 机器建议限制，避免 AI/采集偶发打满
+    mem_limit: 768m
+    cpus: 1.0

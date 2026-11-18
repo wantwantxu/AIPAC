@@ -1,0 +1,13 @@
+node_modules/
+dist/
+data/
+.env
+*.log
+.DS_Store
+.idea/
+*.sqlite
+*.db
+*.db-wal
+*.db-shm
+_tmp_*.mjs
+.vscode/
